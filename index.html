@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#102329"><title>Little Worlds | Genesis 0.6.1</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0b171d;color:#ebf1eb}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0,#1c3d40 0,#0b171d 65%);min-height:100vh}.shell{max-width:1190px;margin:auto;padding:16px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}.brand{font-family:Georgia,serif;font-size:clamp(26px,4vw,37px);letter-spacing:.02em}.brand span{color:#aacf95}.sub{font-size:12px;color:#9eb7b0;letter-spacing:.13em;text-transform:uppercase}.tag{border:1px solid #507772;border-radius:50px;padding:6px 11px;color:#c2d3c2;font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 295px;gap:14px}.panel{background:#12252a;border:1px solid #2d4b4e;border-radius:15px;overflow:hidden;box-shadow:0 12px 30px #0002}.maphead,.section{padding:13px 15px;border-bottom:1px solid #29454a}.maphead{display:flex;justify-content:space-between;align-items:center;gap:8px}.mapframe{padding:10px;background:#071a1c}.mapframe canvas{display:block;width:100%;height:auto;border-radius:8px;touch-action:manipulation;cursor:crosshair;image-rendering:auto}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #29454a}.stat{padding:12px 10px;border-right:1px solid #29454a}.stat:last-child{border-right:none}.num{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums}.label{font-size:11px;color:#96b1ae;text-transform:uppercase;letter-spacing:.08em}.controls{padding:14px;display:flex;flex-direction:column;gap:12px}button,select,input{font:inherit}button{cursor:pointer;padding:11px 13px;border:1px solid #5b817a;background:#254f48;color:#ecfae9;border-radius:9px;font-weight:650}button:hover{background:#336459}button.secondary{background:#172f35;color:#cfdddb;border-color:#36585b}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1;min-width:0}.small{font-size:12px;color:#a5bab5;line-height:1.5}.controlLabel{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#d4e3db}input[type=range]{width:100%;accent-color:#b5d7a4}.section h2{font-size:15px;margin:0;color:#e5eddf}.details{padding:13px 15px;min-height:140px;font-size:13px;line-height:1.6}.details strong{color:#d6eeb5}.feed{max-height:240px;overflow:auto;padding:4px 15px 12px}.event{padding:8px 0;border-bottom:1px solid #284044;font-size:12px;color:#c9d6d1;line-height:1.5}.event .date{color:#94b5a0;margin-right:7px}.footer{color:#87a09e;font-size:12px;padding:12px 2px;line-height:1.6}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#aac1b2}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.graph{width:100%;height:74px;display:block;border-radius:5px;margin-top:8px;background:#0a1c20}.hidden{display:none}@media(max-width:850px){.layout{grid-template-columns:1fr}.stat .num{font-size:21px}.shell{padding:10px}.mapframe{padding:6px}}@media(max-width:420px){.stat{padding:9px 5px}.stat .num{font-size:19px}.tag{font-size:10px}.maphead{flex-wrap:wrap}}
+
+.reportOverlay{position:fixed;inset:0;background:#031014de;z-index:10;display:flex;align-items:center;justify-content:center;padding:14px}.reportOverlay[hidden]{display:none}.reportBox{width:min(650px,100%);max-height:88vh;overflow:auto;border:1px solid #639387;background:#142b30;color:#edf5ec;border-radius:16px;padding:20px;box-shadow:0 15px 70px #0009}.reportBox h2{font-family:Georgia,serif;margin:0 0 9px}.reportGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.reportMetric{border:1px solid #38595b;background:#0d2025;border-radius:9px;padding:10px}.reportMetric b{display:block;font-size:23px}.reportMetric span{font-size:12px;color:#adc4be}.reportSection{margin-top:14px;line-height:1.7;font-size:13px}.reportSection h3{margin:5px 0}.reportActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}.reportActions button{flex:1}
+</style></head><body><div class="shell"><header><div><div class="sub">An artificial life experiment · prototype 0.6.0</div><div class="brand">Little <span>Worlds</span></div></div><div class="tag">GENESIS LABORATORY</div></header>
+<div class="layout"><main class="panel"><div class="maphead"><div><strong id="worldTitle">Unnamed world</strong><div class="small" id="climate">Generating ecology…</div></div><div class="legend"><span><i class="dot" style="background:#f8d890"></i>Beings</span><span><i class="dot" style="background:#d3b48b"></i>Herbivores</span><span><i class="dot" style="background:#ef8e84"></i>Predators</span><span><i class="dot" style="background:#79bd79"></i>Plants</span></div></div><div class="mapframe"><canvas id="map" width="960" height="640" aria-label="World map. Tap a being to inspect them."></canvas></div><div class="stats"><div class="stat"><div class="label">Beings</div><div class="num" id="population">0</div></div><div class="stat"><div class="label">Day</div><div class="num" id="day">1</div></div><div class="stat"><div class="label">Born / died</div><div class="num" id="births">0 / 0</div></div><div class="stat"><div class="label">Herbivores / predators</div><div class="num" id="animals">0</div></div></div></main>
+<aside class="panel"><div class="section"><h2>Experiment controls</h2></div><div class="controls"><label class="controlLabel" for="startCount">Starting beings <strong id="countLabel">20</strong></label><input id="startCount" type="range" min="2" max="80" step="2" value="20"><div class="row"><button id="newWorld">Generate &amp; GO</button></div><label class="controlLabel" for="speed">Simulation speed <strong id="speedLabel">3 days/sec</strong></label><input id="speed" type="range" min="1" max="5" step="1" value="2"><div class="small" id="runtimeStatus" role="status">JavaScript has NOT started. If this stays visible, the file preview is blocking the game. Open a hosted version in Safari.</div><div class="small">You choose only the starting population. Geography, lakes, rivers, weather, plants, animals and being decisions follow the same simulation rules. Time runs until you stop it, the final being dies, or herbivores or predators become extinct. The report captures that moment.</div><canvas id="chart" class="graph" width="290" height="74" aria-label="Population history chart"></canvas><div class="small">Population history of beings (every 10 days)</div><button id="stopReport">Stop &amp; Report</button><button id="openReport" class="secondary" hidden>View diagnostic report</button><div class="small" id="ecoStats">Weather, ecology and finite-material diagnostics loading…</div></div><div class="section"><h2>Being inspector</h2></div><div class="details" id="inspector">Tap a gold dot to inspect a being. Loose wood and stone can be picked up and carried; there are no assigned names, jobs or unlocked technologies.</div><div class="section"><h2>World history</h2></div><div class="feed" id="feed" aria-live="polite"></div></aside></div><div class="footer">Survival Ecology and Extinction Reports release. A small working simulation, not a complete evolutionary model. Individuals independently seek water, food and rest, learn how effective different food sources are, age, reproduce and die. Weather changes rainfall and soil moisture, floods low riverbanks, and affects vegetation. Rivers and lakes contain a simplified renewable aquatic food stock. Inhabitants remember a small number of observed food sites and navigate around impassable terrain. Herbivores eat plants; predators hunt herbivores and can injure beings. The beings already use male/female sexes and adult mate proximity for reproduction. Ecological deaths are tracked; there is no automatic wildlife respawning. There are no scripted technology unlocks, language, housing or farming yet; those require their own testable learning mechanisms.</div></div>
+<div id="reportOverlay" class="reportOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="reportTitle"><div class="reportBox"><h2 id="reportTitle">World diagnostic report</h2><div id="reportBody"></div><div class="reportActions"><button id="copyReport">Copy statistics</button><button class="secondary" id="closeReport">Close report</button></div></div></div>
+<script>
+(()=>{'use strict';
+const statusElement=document.getElementById('runtimeStatus');if(statusElement)statusElement.textContent='JavaScript started; generating world…';const W=60,H=40,T=16,MAP=document.getElementById('map'),ctx=MAP.getContext('2d'),chart=document.getElementById('chart'),cctx=chart.getContext('2d');const $=id=>document.getElementById(id);let world,selected=null,last=0,acc=0,reportText="";const speed=[0,1,3,8,20,45];let selectedSeed=0;function newSeed(){try{if(typeof crypto!=='undefined'&&crypto.getRandomValues){return crypto.getRandomValues(new Uint32Array(1))[0]}}catch(e){}return Math.floor(Math.random()*4294967296)>>>0}function reportError(e){const el=document.getElementById('runtimeStatus');if(el){el.textContent='Simulation error: '+(e&&e.message?e.message:String(e));el.style.color='#ffb7a8'}console.error(e)}
+function rng(seed){let a=seed>>>0;return function(){a+=0x6D2B79F5;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function rint(r,n){return Math.floor(r()*n)};function clamp(v,a,b){return Math.max(a,Math.min(b,v))};function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)};
+function terrain(seed){
+ const rand=rng(seed),rainfall=.32+rand()*.58,temperature=.3+rand()*.55;
+ // Small independent peaks and occasional short ridges; no broad central mountain dome.
+ const peaks=Array.from({length:9+rint(rand,13)},()=>({x:2+rand()*(W-4),y:2+rand()*(H-4),a:.23+rand()*.48,r:1.4+rand()*4.5}));
+ const ridges=Array.from({length:1+rint(rand,3)},()=>{const x=4+rand()*(W-8),y=4+rand()*(H-8),angle=rand()*Math.PI*2;return {x,y,dx:Math.cos(angle),dy:Math.sin(angle),len:3+rand()*10,width:1+rand()*1.8,height:.10+rand()*.19}});
+ const basins=Array.from({length:3+rint(rand,4)},()=>({x:7+rand()*(W-14),y:5+rand()*(H-10),a:.11+rand()*.23,r:3+rand()*7}));
+ const tiles=[];
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  let elev=.41+.045*Math.sin(x*.15+seed%13)+.042*Math.cos(y*.17+seed%17)+.018*Math.sin(x*.71+y*.53+seed%7);
+  for(const p of peaks)elev+=p.a*Math.exp(-((x-p.x)**2+(y-p.y)**2)/(p.r*p.r));
+  for(const q of ridges){const rx=x-q.x,ry=y-q.y,along=rx*q.dx+ry*q.dy,across=-rx*q.dy+ry*q.dx; if(Math.abs(along)<q.len*.5+2)elev+=q.height*Math.exp(-Math.pow(across/q.width,2))*Math.exp(-Math.pow(along/(q.len*.54),4));}
+  for(const p of basins)elev-=p.a*Math.exp(-((x-p.x)**2+(y-p.y)**2)/(p.r*p.r));
+  const edge=Math.min(x,W-1-x,y,H-1-y);elev-=clamp((3.5-edge)*.17,0,.62);
+  const rock=elev>.87,water=elev<.22;
+  const moist=clamp(rainfall+.13*Math.cos(y*.18+x*.1)-elev*.22,0,1);
+  const soil=clamp(.33+moist*.53-(rock?.58:0),0,1);
+  tiles.push({elev,rock,water,permanent:water,river:false,lake:false,wet:0,moist,soil,plant:water||rock?0:clamp((moist-.11)*soil*(.45+rand()*.7),0,1)});
+ }
+ // Each stream follows downhill preference; carved channels are connected rather than randomly scattered blue tiles.
+ const streams=2+rint(rand,4);
+ for(let n=0;n<streams;n++){
+  let starts=[];for(let i=0;i<tiles.length;i++)if(tiles[i].elev>.53&&tiles[i].elev<.91&&i%W>3&&i%W<W-4)starts.push(i);
+  if(!starts.length)break;let at=starts[rint(rand,starts.length)],visited=new Set();
+  for(let k=0;k<95;k++){
+   if(visited.has(at))break;visited.add(at);const t=tiles[at];if(t.water)break;
+   t.river=true;t.permanent=true;
+   let x=at%W,y=Math.floor(at/W),options=[];
+   for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){let nx=x+dx,ny=y+dy;if(nx<0||nx>=W||ny<0||ny>=H)continue;const j=ny*W+nx;if(!visited.has(j))options.push({j,score:tiles[j].elev+rand()*.065-.015})}
+   if(!options.length)break;options.sort((a,b)=>a.score-b.score);
+   if(options[0].score>t.elev+.055){ // local basin: water accumulates as a small lake
+    t.lake=true;t.river=false;for(const o of options.filter(o=>o.score<t.elev+.12).slice(0,2)){tiles[o.j].lake=true;tiles[o.j].permanent=true;}break;
+   }
+   at=options[0].j;
+  }
+ }
+ // Lakes originate in depressions; shores are usable sources of fresh water.
+ for(const basin of basins){const cx=Math.round(basin.x),cy=Math.round(basin.y),radius=1+rand()*1.7;
+  for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){
+   const x=cx+dx,y=cy+dy;if(x<1||x>=W-1||y<1||y>=H-1)continue;
+   if(dx*dx+dy*dy<radius*radius){const t=tiles[y*W+x];if(!t.rock){t.lake=true;t.permanent=true;t.river=false}}
+  }
+ }
+ for(const t of tiles){t.water=t.permanent;t.wet=t.permanent?1:0;if(t.water)t.plant=0}
+ for(const t of tiles){
+  // Initial finite loose matter is seeded once at world formation; never replenished magically.
+  t.wood=(!t.rock&&!t.permanent&&t.plant>.20)?Math.floor(t.plant*7):0;
+  t.stone=t.rock?Math.floor(3+rand()*12):Math.floor(rand()*2);
+ }
+ return {tiles,rainfall,temperature};
+}
+function tile(x,y){if(x<0||y<0||x>=W||y>=H)return null;return world.tiles[Math.floor(y)*W+Math.floor(x)]}
+function valid(x,y){const t=tile(x,y);return t&&!t.water&&!t.rock}
+function place(r){for(let i=0;i<5000;i++){const x=2+rint(r,W-4),y=2+rint(r,H-4);if(valid(x,y))return{x,y}}return{x:W/2|0,y:H/2|0}}
+function person(r,id,x,y){return{id,x,y,age:17+rint(r,16),energy:75+r()*25,food:68+r()*30,water:70+r()*30,health:85+r()*15,sex:r()<.5?'F':'M',memory:{plants:.35,animals:.2,places:[]},attempts:{plants:0,animals:0},experience:0,action:'Exploring',offspring:0,inventory:{wood:0,stone:0},interactions:0,alive:true,dayBorn:0}}
+function history(message){world.events.unshift({day:world.day,message});if(world.events.length>70)world.events.pop();renderFeed()}
+function generate(seed,count){const t=terrain(seed);world={seed,rand:rng(seed^0xB83928F4),tiles:t.tiles,rainfall:t.rainfall,temperature:t.temperature,weather:{rain:0,soilWater:.5,lakeLevel:.55,wetDays:0,dryDays:0,floodTiles:0,phase:"Mild",fish:0},day:0,people:[],beasts:[],predators:[],births:0,deaths:0,nextId:1,events:[],popHistory:[],ecoHistory:[],causes:{herbivoreStarvation:0,herbivorePredation:0,herbivoreDehydration:0,predatorStarvation:0,predatorDehydration:0,beingForagingHunts:0,predatorAttacksOnBeings:0,beingPredationDeaths:0,beingStarvation:0,beingDehydration:0,beingOldAge:0,beingOther:0},initial:count,extinct:false,extinctionDay:null,stopReason:null,stopDay:null,initialHerbivores:0,initialPredators:0,peakPopulation:count,peakHerbivores:0,peakPredators:0,resources:{woodCollected:0,stoneCollected:0,woodReturned:0,stoneReturned:0},performanceWarning:false};let r=world.rand;world.weather.fish=Math.round(world.tiles.filter(t=>t.permanent).length*.45);for(let i=0;i<count;i++){const pos=place(r);world.people.push(person(r,world.nextId++,pos.x,pos.y))}for(let i=0;i<Math.round(18+world.rainfall*25);i++){const p=place(r);world.beasts.push({...p,energy:62+r()*26,water:58+r()*24,age:rint(r,220)})}for(let i=0;i<Math.round(1+world.rainfall*3);i++){const p=place(r);world.predators.push({...p,energy:62+r()*20,water:58+r()*22,age:rint(r,190)})}world.initialHerbivores=world.beasts.length;world.initialPredators=world.predators.length;selected=null;$('stopReport').disabled=false;$('openReport').hidden=true;$('reportOverlay').hidden=true;reportText="";history('A new world formed with '+world.tiles.filter(t=>t.lake).length+' lake tiles and '+world.tiles.filter(t=>t.river).length+' river tiles.');history(count+' beings begin life without names, occupations or instructions.');$('worldTitle').textContent='World '+String(seed>>>0).slice(-6);$('runtimeStatus').textContent='✅ JavaScript started — world is running. Tap a being to inspect; time continues.';$('climate').textContent=(world.rainfall>.66?'Wet':world.rainfall<.5?'Dry':'Temperate')+' ecosystem · '+(world.temperature>.63?'warm':world.temperature<.42?'cool':'mild')+' climate';render()}
+function nearWater(p){for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(tile(p.x+dx,p.y+dy)?.water)return true;return false}
+function waterAccess(p,r){const spot=closest(p,(q,x,y)=>q.water,17);if(spot)stepToward(p,spot,r);else moveTo(p,neighbor(p,r))}
+function nearestPredator(p,range){let best=null,dmin=range;for(const v of world.predators){const d=dist(v,p);if(d<dmin){best=v;dmin=d}}return best}
+function flee(p,threat,r){let best=null,score=-Infinity;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]){const x=p.x+dx,y=p.y+dy;if(!valid(x,y))continue;const d=Math.hypot(x-threat.x,y-threat.y);const scoreNow=d+r()*.24;if(scoreNow>score){score=scoreNow;best={x,y}}}if(best)moveTo(p,best)}
+function neighbor(p,r){const options=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]].sort(()=>r()-.5);for(const [dx,dy] of options){let x=p.x+dx,y=p.y+dy;if(valid(x,y))return{x,y}}return{x:p.x,y:p.y}}
+function moveTo(p,d){p.x=d.x;p.y=d.y}
+function closest(p,predicate,range=10){let best=null,bestD=Infinity;for(let y=Math.max(1,p.y-range);y<Math.min(H-1,p.y+range);y++)for(let x=Math.max(1,p.x-range);x<Math.min(W-1,p.x+range);x++){let t=tile(x,y),d=Math.abs(x-p.x)+Math.abs(y-p.y);if(d<bestD&&predicate(t,x,y)){best={x,y};bestD=d}}return best}
+function stepToward(p,target,r){
+ if(!target)return moveTo(p,neighbor(p,r));
+ // Breadth-first search avoids getting stuck against mountains and waterways.
+ const source=p.y*W+p.x,goal=target.y*W+target.x;
+ if(source===goal)return;
+ const seen=new Uint8Array(W*H),queue=[source],first=new Int32Array(W*H);seen[source]=1;
+ let head=0,found=-1,nearest=source,nearestDistance=dist(p,target);
+ while(head<queue.length&&head<1250){const id=queue[head++],x=id%W,y=(id/W)|0;
+  const d=Math.abs(x-target.x)+Math.abs(y-target.y);
+  if(d<nearestDistance){nearest=id;nearestDistance=d}
+  if(id===goal){found=id;break}
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,ni=ny*W+nx;if(nx<0||nx>=W||ny<0||ny>=H||seen[ni]||!valid(nx,ny))continue;seen[ni]=1;first[ni]=id===source?ni:first[id];queue.push(ni)}
+ }
+ const next=found>=0?found:nearest;
+ if(next!==source){const point=first[next];moveTo(p,{x:point%W,y:(point/W)|0})}
+}
+function rememberPlace(p,t){if(!t||t.plant<.3)return;const places=p.memory.places;
+ const old=places.find(q=>Math.abs(q.x-p.x)+Math.abs(q.y-p.y)<3);
+ if(old){old.x=p.x;old.y=p.y;old.day=world.day;old.quality=t.plant}
+ else{places.push({x:p.x,y:p.y,day:world.day,quality:t.plant});if(places.length>8)places.shift()}
+}
+function rememberedFood(p){return p.memory.places.filter(q=>world.day-q.day<500).sort((a,b)=>(b.quality-.013*dist(p,b))-(a.quality-.013*dist(p,a)))[0]||null}
+function learn(p,what,reward){p.memory[what]=clamp(p.memory[what]+.12*(reward-p.memory[what]),.03,.97);p.attempts[what]++;p.experience++}
+function releaseInventory(p){const t=tile(p.x,p.y);if(!t)return;
+ for(const type of ['wood','stone']){const amount=p.inventory[type]||0;t[type]+=amount;world.resources[type+'Returned']+=amount;p.inventory[type]=0;}}
+function investigateMaterials(p,t,r){
+ if(!t||p.energy<40||p.food<60||p.water<60||r()>.045)return false;
+ const type=t.wood>0&&t.stone>0?(r()<.5?'wood':'stone'):t.wood>0?'wood':t.stone>0?'stone':null;
+ if(!type)return false;
+ t[type]-=1;p.inventory[type]++;world.resources[type+'Collected']++;p.interactions++;
+ p.energy-=1.3;p.action='Examining loose '+type;return true;
+}
+function act(p){const r=world.rand,t=tile(p.x,p.y);p.age+=1/365;p.food-=.48;p.water-=.67;p.energy-=.39;p.health-=.012;if(p.food<25)p.health-=.42;if(p.water<22)p.health-=.8;if(p.energy<10)p.health-=.15;if(p.food<=0||p.water<=0)p.health-=1.3;const was=p.action;rememberPlace(p,t);const danger=nearestPredator(p,3.2);if(danger&&p.energy>7){flee(p,danger,r);p.energy-=1.4;p.action='Fleeing predator';return;}if(t?.water&&!t.permanent){p.health-=.28;const safe=closest(p,q=>!q.water&&!q.rock,5);if(safe)stepToward(p,safe,r);p.action="Crossing flooded ground";return;}
+if(p.water<57){if(nearWater(p)){p.water=clamp(p.water+42,0,100);p.action='Drinking'}else{waterAccess(p,r);p.action='Seeking water'}}
+else if(p.food<67){const animal=world.beasts.find(b=>dist(b,p)<2);const animalUtility=(animal?.energy??0)/75*p.memory.animals;const plantUtility=(t?.plant??0)*p.memory.plants;const hunt=animal&&animalUtility>plantUtility&&r()<.4;if(hunt){const success=r()<.27+.3*(p.experience/(p.experience+30));if(success){p.food=clamp(p.food+37,0,100);animal.energy-=27;world.causes.beingForagingHunts++;learn(p,'animals',1);p.action='Hunting successfully'}else{p.energy-=5;p.health-=r()*2;learn(p,'animals',0);p.action='Failed hunt'}}else if(nearWater(p)&&world.weather.fish>1&&r()<.16){const caught=Math.min(world.weather.fish, .4+r()*.8);world.weather.fish-=caught;p.food=clamp(p.food+caught*19,0,100);p.action='Gathering aquatic food'}else if(t?.plant>.13){let amount=Math.min(t.plant,.2+r()*.1);t.plant-=amount;p.food=clamp(p.food+amount*115,0,100);learn(p,'plants',clamp(amount*4,0,1));p.action='Foraging'}else{const known=rememberedFood(p),food=known&&dist(p,known)<18?known:closest(p,q=>q.plant>.23,8);if(food){stepToward(p,food,r);p.action=known===food?'Returning to remembered food':'Searching for food'}else{moveTo(p,neighbor(p,r));p.action='Exploring for food'}}}
+else if(p.energy<40){p.energy=clamp(p.energy+4.6,0,100);p.action='Resting'}else if(investigateMaterials(p,t,r)){}else{const q=neighbor(p,r);moveTo(p,q);p.action='Exploring'}
+if(p.health<0||p.age>56+r()*20){const why=p.age>56+r()*20?'beingOldAge':p.water<12?'beingDehydration':p.food<12?'beingStarvation':'beingOther';world.causes[why]++;releaseInventory(p);p.alive=false;world.deaths++;if(selected===p.id)selected=null;if(world.deaths<9||world.deaths%10===0)history('Being #'+p.id+' died at age '+Math.floor(p.age)+'.');return}
+if(p.health<80&&p.food>65&&p.water>65)p.health=clamp(p.health+.16,0,100);
+if(was!==p.action&&p.action==='Hunting successfully'&&r()<.08)history('Being #'+p.id+' succeeded while hunting.');
+}
+function animals(){
+ const r=world.rand,causes=world.causes;
+ const youngHerb=[];
+ for(const a of world.beasts){
+  a.age++;a.energy-=.24;a.water-=.29+world.temperature*.06;
+  let t=tile(a.x,a.y);
+  if(t&&t.plant>.035){const eat=Math.min(t.plant,.085);t.plant-=eat;a.energy=clamp(a.energy+eat*8.5,0,110);a.water=clamp(a.water+eat*15,0,110)}
+  if(a.water<56&&nearWater(a)){a.water=clamp(a.water+38,0,110);a.action='Drinking'}
+  else if(a.water<44){waterAccess(a,r); a.action='Seeking water'}
+  else {
+   const nearby=closest(a,q=>q.plant>.18,7);
+   if(a.energy<78&&nearby&&r()<.82){stepToward(a,nearby,r);a.action='Seeking grazing'}
+   else if(r()<.33){moveTo(a,neighbor(a,r));a.action='Roaming'}
+  }
+  if(a.energy>71&&a.water>58&&a.age>110&&r()<.0055){youngHerb.push({x:a.x,y:a.y,energy:40,water:45,age:0});a.energy-=18;a.water-=10}
+ }
+ world.beasts.push(...youngHerb);
+ const youngPred=[];
+ for(const predator of world.predators){
+  predator.age++;predator.energy-=.32;predator.water-=.34+world.temperature*.07;
+  let prey=null,best=Infinity;
+  for(const animal of world.beasts){if(animal.energy<=0||animal.water<=0)continue;const d=dist(predator,animal);if(d<best){prey=animal;best=d}}
+  let beingTarget=null,beingDist=Infinity;
+  for(const being of world.people){if(!being.alive)continue;const d=dist(predator,being);if(d<beingDist){beingTarget=being;beingDist=d}}
+  const hungryForBeing=beingTarget&&predator.energy<48&&(!prey||best>5);
+  if(predator.water<56&&nearWater(predator)){predator.water=clamp(predator.water+40,0,110);predator.action='Drinking'}
+  else if(predator.water<42){waterAccess(predator,r); predator.action='Seeking water'}
+  else if(hungryForBeing&&beingDist<=1.45&&r()<.11){
+   causes.predatorAttacksOnBeings++;predator.energy-=4;
+   const damage=9+r()*24;beingTarget.health-=damage;beingTarget.action='Escaping a predator';
+   if(beingTarget.health<=0&&beingTarget.alive){beingTarget.alive=false;releaseInventory(beingTarget);world.deaths++;if(selected===beingTarget.id)selected=null;causes.beingPredationDeaths++;predator.energy=clamp(predator.energy+36,0,110);predator.water=clamp(predator.water+10,0,110);if(world.deaths<9||world.deaths%10===0)history('A predator killed being #'+beingTarget.id+'.')}
+  }
+  else if(prey&&best<=1.5&&predator.energy<78&&r()<.24){prey.energy=-1;causes.herbivorePredation++;predator.energy=clamp(predator.energy+65,0,110);predator.water=clamp(predator.water+12,0,110);predator.action='Hunting herbivore'}
+  else if(hungryForBeing&&beingDist<7&&r()<.42){stepToward(predator,beingTarget,r);predator.action='Stalking beings'}
+  else if(prey&&best<11&&r()<.68){stepToward(predator,prey,r);predator.action='Pursuing herbivore'}
+  else if(r()<.4){moveTo(predator,neighbor(predator,r));predator.action='Roaming'}
+  if(predator.energy>88&&predator.water>56&&predator.age>200&&r()<.002){youngPred.push({x:predator.x,y:predator.y,energy:46,water:42,age:0});predator.energy-=34;predator.water-=12}
+ }
+ world.predators.push(...youngPred);
+ for(const a of world.beasts){if(a.energy===-1){}else if(a.water<=0)causes.herbivoreDehydration++;else if(a.energy<=0)causes.herbivoreStarvation++;}
+ for(const a of world.predators){if(a.water<=0)causes.predatorDehydration++;else if(a.energy<=0)causes.predatorStarvation++;}
+ world.beasts=world.beasts.filter(a=>a.energy>0&&a.water>0&&a.age<3400);
+ world.predators=world.predators.filter(a=>a.energy>0&&a.water>0&&a.age<3600);
+ if(world.day%120===0)history('Ecology: '+world.beasts.length+' herbivores, '+world.predators.length+' predators.');
+}
+function reproduce(){const r=world.rand;if(world.day%18)return;let born=[];for(const a of world.people){if(!a.alive||a.sex!=='F'||a.age<18||a.age>37||a.food<63||a.water<60||a.health<65||r()>.12)continue;const mate=world.people.find(b=>b.alive&&b.sex==='M'&&b.age>=18&&b.age<55&&dist(a,b)<4&&b.food>50&&b.health>50);if(mate){const kid=person(r,world.nextId++,a.x,a.y);kid.age=0;kid.food=65;kid.water=65;kid.energy=70;kid.health=70;kid.dayBorn=world.day;kid.memory.plants=clamp((a.memory.plants+mate.memory.plants)/2*.5+.2,0,1);kid.memory.animals=clamp((a.memory.animals+mate.memory.animals)/2*.5+.12,0,1);born.push(kid);a.food-=17;world.births++;a.offspring++}}world.people.push(...born);if(born.length)history(born.length+' child'+(born.length>1?'ren were':' was')+' born.')}
+function ecosystem(){
+ const r=world.rand,w=world.weather;
+ const season=Math.sin(2*Math.PI*world.day/365),wetSeason=clamp(.48+.34*season,0,1);
+ const rainChance=clamp(.08+world.rainfall*.42+.24*season+w.soilWater*.06,.04,.92);
+ w.rain=r()<rainChance?(.16+r()*.53+(r()<.045?r()*.95:0)):0;
+ w.phase=w.rain>.8?'Downpour':w.rain>.2?'Rain':w.soilWater<.2?'Drought':'Clear';
+ w.soilWater=clamp(w.soilWater+(w.rain*.15)-(.017+world.temperature*.015+Math.max(0,season)*.009),0,1);
+ w.lakeLevel=clamp(w.lakeLevel+w.rain*.095-.012-world.temperature*.003,0,1);
+ if(w.rain>.3)w.wetDays=Math.min(25,w.wetDays+2);else w.wetDays=Math.max(0,w.wetDays-1);
+ if(w.soilWater<.2)w.dryDays++;else w.dryDays=0;
+ let floods=0;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const t=world.tiles[y*W+x];if(t.rock)continue;
+  if(t.permanent){t.water=true;t.wet=1;continue;}
+  let nearChannel=false;
+  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<W&&ny<H&&world.tiles[ny*W+nx].permanent){nearChannel=true;break}}
+  const flood=nearChannel&&w.lakeLevel>.72&&w.wetDays>3&&t.elev<.72;
+  t.wet=clamp(t.wet+(flood?.45:-.19),0,1);t.water=t.wet>.6;
+  if(t.water){floods++;t.plant=clamp(t.plant-.04,0,1);continue;}
+  const moisture=clamp(.12+w.soilWater*.72+t.moist*.22+(nearChannel?.16:0)-Math.max(0,t.elev-.55)*.25,0,1);
+  t.plant=clamp(t.plant+(moisture*.013*t.soil)*(1-t.plant)-(.0003+Math.max(0,.3-moisture)*.007)-r()*.0001,0,1);
+ }
+ w.floodTiles=floods;
+ // Aquatic food population renews only while water and suitable conditions remain.
+ const habitat=world.tiles.filter(t=>t.permanent).length;
+ w.fish=clamp(w.fish+(.004*w.fish*(1-w.fish/Math.max(1,habitat*.65)))-(.15+Math.max(0,world.temperature-.65)*.25),0,habitat*.65);
+ if(world.day%180===0)history('Weather: '+w.phase+', soil moisture '+Math.round(w.soilWater*100)+'%, flooded ground '+floods+' tiles.');
+ if(w.dryDays===20)history('Prolonged dry conditions have reduced soil moisture.');
+ if(floods>20&&world.day%30===0)history('High water inundates '+floods+' land tiles.');
+}
+function tick(){if(!world||world.extinct)return;world.day++;ecosystem();animals();for(const p of world.people)if(p.alive)act(p);world.people=world.people.filter(p=>p.alive);reproduce();if(!world.performanceWarning&&world.people.length+world.beasts.length+world.predators.length>1200){world.performanceWarning=true;history('Performance advisory: more than 1,200 living entities. No population restrictions applied.')}world.peakPopulation=Math.max(world.peakPopulation,world.people.length);world.peakHerbivores=Math.max(world.peakHerbivores,world.beasts.length);world.peakPredators=Math.max(world.peakPredators,world.predators.length);if(world.day%10===0){world.popHistory.push(world.people.length);world.ecoHistory.push({day:world.day,herbivores:world.beasts.length,predators:world.predators.length,plant:Math.round(world.tiles.reduce((a,t)=>a+t.plant,0)/world.tiles.length*100)});if(world.ecoHistory.length>400)world.ecoHistory.shift()}if(world.popHistory.length>300)world.popHistory.shift();if(!world.extinct){if(world.beasts.length===0&&world.initialHerbivores>0)stopWorld('Herbivore extinction');else if(world.predators.length===0&&world.initialPredators>0)stopWorld('Predator extinction');else if(world.people.length===0)stopWorld('Being extinction')}if(world.extinct)return;if(world.day%365===0)history('Ecological report: '+JSON.stringify(world.causes)+'; plant cover '+Math.round(world.tiles.reduce((a,t)=>a+t.plant,0)/world.tiles.length*100)+'%.');if(world.day%100===0){const females=world.people.filter(p=>p.sex==='F'&&p.age>=18&&p.age<=37).length,males=world.people.filter(p=>p.sex==='M'&&p.age>=18&&p.age<55).length;history('Year '+(world.day/365).toFixed(1)+': '+world.people.length+' beings survive ('+females+' reproductive-age females, '+males+' males).');if(world.people.length&&(!females||!males))history('Population warning: no compatible reproductive-age pair of beings currently exists.');}}
+function color(t){if(t.water)return t.river?'#307f9b':t.lake?'#377fa4':t.permanent?'#255568':'#5391a3';if(t.rock)return '#68706c';let k=t.moist;return `rgb(${Math.floor(63+55*(1-k))},${Math.floor(91+58*k)},${Math.floor(50+28*k)})`}
+function renderMap(){ctx.clearRect(0,0,960,640);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const t=world.tiles[y*W+x];ctx.fillStyle=color(t);ctx.fillRect(x*T,y*T,T+.4,T+.4);if(t.plant>.25){ctx.fillStyle=t.plant>.6?'#8cc36f':'#6fab64';ctx.fillRect(x*T+5,y*T+4,3+t.plant*3,3+t.plant*4)}}ctx.fillStyle='#c4aa83';for(const b of world.beasts){ctx.beginPath();ctx.arc(b.x*T+8,b.y*T+8,3,0,Math.PI*2);ctx.fill()}ctx.fillStyle='#ef8e84';for(const b of world.predators){ctx.beginPath();ctx.arc(b.x*T+8,b.y*T+8,3.8,0,Math.PI*2);ctx.fill()}for(const p of world.people){ctx.fillStyle=p.id===selected?'#fffbcb':'#f9ce80';ctx.beginPath();ctx.arc(p.x*T+8,p.y*T+8,p.id===selected?5.5:3.5,0,Math.PI*2);ctx.fill();if(p.id===selected){ctx.strokeStyle='#fff7ce';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x*T+8,p.y*T+8,8,0,Math.PI*2);ctx.stroke()}}}
+function renderChart(){let data=world.popHistory.slice(-120);cctx.clearRect(0,0,290,74);cctx.strokeStyle='#3a6263';cctx.beginPath();cctx.moveTo(0,65);cctx.lineTo(290,65);cctx.stroke();if(data.length<2)return;let max=Math.max(world.initial,...data,1);cctx.strokeStyle='#b9dc94';cctx.lineWidth=2;cctx.beginPath();data.forEach((v,i)=>{const x=i/(data.length-1)*290,y=65-v/max*55;if(i===0)cctx.moveTo(x,y);else cctx.lineTo(x,y)});cctx.stroke()}
+function renderFeed(){$('feed').innerHTML=world.events.slice(0,14).map(e=>'<div class="event"><span class="date">Day '+e.day+'</span>'+e.message+'</div>').join('')}
+function renderInspector(){const p=world.people.find(p=>p.id===selected);if(!p){$('inspector').textContent='Tap a gold dot to inspect a being. Loose wood and stone can be picked up and carried; there are no assigned names, jobs or unlocked technologies.';return}const pct=v=>Math.round(v)+'%';$('inspector').innerHTML='<strong>Being #'+p.id+'</strong> · Age '+Math.floor(p.age)+'<br>Sex: '+(p.sex==='F'?'Female':'Male')+' · Reproductive age: '+(p.age>=18&&(p.sex==='F'?p.age<=37:p.age<55)?'Yes':'No')+'<br>Current action: '+p.action+'<br>Health '+pct(p.health)+' · Food '+pct(p.food)+'<br>Water '+pct(p.water)+' · Energy '+pct(p.energy)+'<br>Learned foraging preference: '+pct(p.memory.plants*100)+'<br>Learned hunting preference: '+pct(p.memory.animals*100)+'<br>Food experiences: '+p.experience+' · Children: '+p.offspring+'<br>Loose materials carried: wood '+p.inventory.wood+', stone '+p.inventory.stone+' · Interactions: '+p.interactions+'<br>Remembered food sites: '+p.memory.places.filter(q=>world.day-q.day<500).length+'<br><span class="small">Preferences update after actions. They do not imply advanced reasoning or a general intelligence.</span>'}
+function render(){if(!world)return;renderMap();$('population').textContent=world.people.length+' beings (♀'+world.people.filter(p=>p.sex==='F').length+' ♂'+world.people.filter(p=>p.sex==='M').length+')';$('day').textContent=world.day;$('births').textContent=world.births+' / '+world.deaths;$('animals').textContent=world.beasts.length+' / '+world.predators.length;renderChart();renderInspector();$('ecoStats').textContent='Wildlife losses — herbivores: '+world.causes.herbivoreStarvation+' starvation / '+world.causes.herbivoreDehydration+' dehydration / '+world.causes.herbivorePredation+' predation; predators: '+world.causes.predatorStarvation+' starvation / '+world.causes.predatorDehydration+' dehydration. Beings hunted herbivores '+world.causes.beingForagingHunts+' times. Predator attacks on beings: '+world.causes.predatorAttacksOnBeings+'; deaths: '+world.causes.beingPredationDeaths+'. Loose wood on ground: '+world.tiles.reduce((a,t)=>a+t.wood,0)+'; stone: '+world.tiles.reduce((a,t)=>a+t.stone,0)+'. Plant cover: '+Math.round(world.tiles.reduce((a,t)=>a+t.plant,0)/world.tiles.length*100)+'%. Weather: '+world.weather.phase+' · Soil moisture: '+Math.round(world.weather.soilWater*100)+'% · Flooded tiles: '+world.weather.floodTiles+' · Aquatic food: '+Math.floor(world.weather.fish)+'.'}
+function stopWorld(reason){
+ if(!world||world.extinct)return;
+ world.extinct=true;world.stopReason=reason;world.stopDay=world.day;world.extinctionDay=world.day;
+ history(reason+' on day '+world.day+'. Simulation stopped and diagnostic snapshot recorded.');
+ $('stopReport').disabled=true;
+ showReport();
+}
+function reportData(){
+ const c=world.causes,w=world.weather;
+ const livePlants=world.tiles.reduce((sum,t)=>sum+t.plant,0);
+ const fields=[
+ ['World ID',String(world.seed>>>0)],['Stop reason',world.stopReason||'Unknown'],['Exact stop day',world.stopDay],
+ ['Years elapsed',(world.stopDay/365).toFixed(2)],['Initial beings',world.initial],['Beings remaining',world.people.length],
+ ['Peak beings',world.peakPopulation],['Being births',world.births],['Being deaths',world.deaths],
+ ['Initial herbivores',world.initialHerbivores],['Herbivores remaining',world.beasts.length],['Peak herbivores',world.peakHerbivores],
+ ['Initial predators',world.initialPredators],['Predators remaining',world.predators.length],['Peak predators',world.peakPredators],
+ ['Herbivore deaths: starvation',c.herbivoreStarvation],['Herbivore deaths: dehydration',c.herbivoreDehydration],
+ ['Herbivore deaths: predation',c.herbivorePredation],['Predator deaths: starvation',c.predatorStarvation],
+ ['Predator deaths: dehydration',c.predatorDehydration],['Predator attacks on beings',c.predatorAttacksOnBeings],
+ ['Beings killed by predators',c.beingPredationDeaths],['Being dehydration deaths',c.beingDehydration],
+ ['Being starvation deaths',c.beingStarvation],['Being old-age deaths',c.beingOldAge],['Other being deaths',c.beingOther],
+ ['Successful being hunts',c.beingForagingHunts],['Plant cover',(100*livePlants/world.tiles.length).toFixed(1)+'%'],
+ ['Soil moisture',(w.soilWater*100).toFixed(1)+'%'],['Flooded land tiles',w.floodTiles],
+ ['Aquatic food',w.fish.toFixed(1)],['Rain today',w.rain.toFixed(2)],['Weather',w.phase],
+ ['Climate',world.rainfall.toFixed(2)+' rainfall / '+world.temperature.toFixed(2)+' temperature'],
+ ['Loose wood on ground',world.tiles.reduce((a,t)=>a+t.wood,0)],
+ ['Loose stone on ground',world.tiles.reduce((a,t)=>a+t.stone,0)],
+ ['Wood currently carried',world.people.reduce((a,p)=>a+p.inventory.wood,0)],
+ ['Stone currently carried',world.people.reduce((a,p)=>a+p.inventory.stone,0)],
+ ['Wood collected (cumulative transfers)',world.resources.woodCollected],
+ ['Stone collected (cumulative transfers)',world.resources.stoneCollected]
+ ];return fields;
+}
+function showReport(){
+ if(!world?.extinct)return;
+ const fields=reportData();
+ reportText='LITTLE WORLDS — GENESIS v0.6.1 DIAGNOSTIC REPORT\n'+fields.map(([k,v])=>k+': '+v).join('\n');
+ const metric=fields.slice(1,15).map(([k,v])=>'<div class="reportMetric"><span>'+k+'</span><b>'+v+'</b></div>').join('');
+ const rows=fields.slice(15).map(([k,v])=>'<div>'+k+': <strong>'+v+'</strong></div>').join('');
+ $('reportBody').innerHTML='<div class="small">World '+(world.seed>>>0)+' · '+world.stopReason+' · Simulation frozen on day '+world.stopDay+'.</div><div class="reportGrid">'+metric+'</div><div class="reportSection"><h3>Ecology and mortality</h3>'+rows+'</div>';
+ $('openReport').hidden=false;$('reportOverlay').hidden=false;
+ $('runtimeStatus').textContent=world.stopReason+' on day '+world.stopDay+'. Simulation stopped; report available.';
+}
+$('stopReport').onclick=()=>stopWorld('Manual stop');$('openReport').onclick=showReport;$('closeReport').onclick=()=>{$('reportOverlay').hidden=true};$('copyReport').onclick=()=>{if(navigator.clipboard?.writeText){navigator.clipboard.writeText(reportText).then(()=>{$('copyReport').textContent='Copied!'}).catch(()=>window.prompt('Select and copy the report:',reportText))}else window.prompt('Select and copy the report:',reportText)};
+$('startCount').oninput=e=>$('countLabel').textContent=e.target.value;$('speed').oninput=e=>$('speedLabel').textContent=speed[Number(e.target.value)]+' days/sec';$('newWorld').onclick=()=>{try{acc=0;last=0;selectedSeed=newSeed();generate(selectedSeed,Number($('startCount').value))}catch(e){reportError(e)}};MAP.addEventListener('pointerdown',e=>{const rect=MAP.getBoundingClientRect(),x=(e.clientX-rect.left)/rect.width*W,y=(e.clientY-rect.top)/rect.height*H;let best=null,bestD=2;for(const p of world.people){const d=Math.hypot(p.x+.5-x,p.y+.5-y);if(d<bestD){best=p;bestD=d}}selected=best?.id??null;render()});
+function frame(now){try{if(!last)last=now;let elapsed=Math.min((now-last)/1000,.12);last=now;if(world&&!world.extinct){acc+=elapsed*speed[Number($('speed').value)];let loops=0;while(acc>=1&&loops++<8&&!world.extinct){tick();acc--;}if(loops>0)render()}}catch(e){reportError(e)}requestAnimationFrame(frame)}try{selectedSeed=newSeed();generate(selectedSeed,20);requestAnimationFrame(frame)}catch(e){reportError(e)}
+})();
+</script></body></html>
