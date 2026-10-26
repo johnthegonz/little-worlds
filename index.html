@@ -347,12 +347,14 @@ function animals(){
   ensureAnimal(a,r);a.age++;a.energy-=.29*(a.genes?.metabolism??1)*(a.genes?.size??1);a.water-=(.32+world.temperature*.06)*(a.genes?.waterUse??1);
   const ground=tile(a.x,a.y);
   if(ground&&ground.plant>.06){const eaten=Math.min(ground.plant,.065);ground.plant-=eaten;a.energy=clamp(a.energy+eaten*7*(a.genes?.forage??1)*(a.genes?.plantEfficiency??1),0,110);a.water=clamp(a.water+eaten*10,0,110);world.foodWeb.omniPlants++;world.evolution.plantEnergy+=eaten*7*(a.genes?.forage??1)*(a.genes?.plantEfficiency??1);a.action='Eating plants';}
-  let nearby=null,range=2;
-  if(a.energy<64)for(const prey of world.beasts){if(prey.energy<=0||prey.water<=0)continue;const d=dist(a,prey);if(d<range){range=d;nearby=prey;}}
-  if(a.age>=DEPENDENCE.omni&&nearby&&a.energy<75){
-    world.evolution.huntsAttempted++;
+  let nearby=null,range=12;
+  if(a.energy<77&&a.age>=DEPENDENCE.omni)for(const prey of world.beasts){if(prey.energy<=0||prey.water<=0)continue;const d=dist(a,prey);if(d<range){range=d;nearby=prey;}}
+  if(a.age>=DEPENDENCE.omni&&nearby&&a.energy<75&&((a.genes?.meatEfficiency??1)*(a.genes?.huntingAbility??1)>.45||a.energy<36)){
+    if(range>1.45){stepToward(a,nearby,r);a.energy-=.22*(a.genes?.metabolism??1);a.action='Pursuing prey';}
+    else {world.evolution.huntsAttempted++;
     const chance=clamp(.12*(a.genes?.huntingAbility??1)*(a.genes?.mobility??1),.01,.60);
     if(r()<chance){nearby.energy=-1;world.causes.herbivorePredation++;world.foodWeb.omniPrey++;const gained=36*(a.genes?.forage??1)*(a.genes?.meatEfficiency??1);a.energy=clamp(a.energy+gained,0,110);world.evolution.meatEnergy+=gained;world.evolution.huntsSucceeded++;a.action='Eating animal food';}
+    }
    }
   if(a.water<52&&nearWater(a)){a.water=clamp(a.water+38,0,110);a.action='Drinking';}
   else if(a.water<38){waterAccess(a,r);a.action='Seeking water';}
