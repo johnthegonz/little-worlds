@@ -263,7 +263,7 @@ function animalReproduction(a,group,kind,r,young){
  if(!mate){seekAnimalMate(a,group,kind,r);return;}
  if(nearest<=b.mateRadius){
    stats.encounters++;
-   if(r()<b.conceptionChance){a.pregnancy=b.gestation;a.mateGenes={genes:{...mate.genes}};a.mateKinId=mate.kinId||null;a.mateGeneration=mate.generation||0;stats.conceptions++;a.energy-=kind==='herb'?6:kind==='omni'?7:9; world.mateBehaviour[kind].conceptions++;a.action='Gestating';}
+   if(r()<b.conceptionChance){if(!mate.kinId)mate.kinId=world.nextAnimalKinId++;a.pregnancy=b.gestation;a.mateGenes={genes:{...mate.genes}};a.mateKinId=mate.kinId||null;a.mateGeneration=mate.generation||0;stats.conceptions++;a.energy-=kind==='herb'?6:kind==='omni'?7:9; world.mateBehaviour[kind].conceptions++;a.action='Gestating';}
  }else seekAnimalMate(a,group,kind,r);
 }
 // Passive geometry diagnostics. This deliberately makes no movement or random decisions.
@@ -559,7 +559,7 @@ function loadWorld(){
   const raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;
   const snapshot=JSON.parse(raw);if(![8,9,10,11,12,13,14,15].includes(snapshot.version)||!snapshot.world||!Array.isArray(snapshot.world.tiles))return false;
   world=snapshot.world;
-  if(!world.omnivores)world.omnivores=[];if(!world.regionalHistory)world.regionalHistory=[];if(!world.predatorLineages)world.predatorLineages=[];if(world.breedingPairDays===undefined)world.breedingPairDays=0;if(world.lastBreedingPairDay===undefined)world.lastBreedingPairDay=null;
+  if(!world.omnivores)world.omnivores=[];if(!world.regionalHistory)world.regionalHistory=[];if(!world.predatorLineages)world.predatorLineages=[];if(!world.careStats)world.careStats={herb:{transfers:0,energy:0,juvenileDeaths:0},omni:{transfers:0,energy:0,juvenileDeaths:0},pred:{transfers:0,energy:0,juvenileDeaths:0}};if(!world.nextAnimalKinId)world.nextAnimalKinId=Math.max(0,...world.beasts.concat(world.omnivores,world.predators).map(a=>a.kinId||0))+1;if(world.breedingPairDays===undefined)world.breedingPairDays=0;if(world.lastBreedingPairDay===undefined)world.lastBreedingPairDay=null;
   if(!world.predatorHistory)world.predatorHistory={nextId:1,deaths:[],maxGeneration:0,energy:{metabolism:0,huntTravel:0,attacks:0,reproduction:0,mealsUsable:0,mealsOffered:0,overflow:0},days:0};
   if(!world.maternalLoss)world.maternalLoss={herb:0,omni:0,pred:0};
   if(!world.foodWeb)world.foodWeb={predHerb:0,predOmni:0,predBeing:0,omniPlants:0,omniPrey:0};
