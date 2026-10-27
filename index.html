@@ -760,9 +760,9 @@ function frame(now){
   if(world&&!world.extinct){
    acc+=seconds*speed[Number($('speed').value)];
    // A work budget limits individual frames, never species or total owed simulation days.
-   let loops=0;const simStart=performance.now();while(acc>=1&&loops++<70&&!world.extinct){tick();acc--;}perf.simMs+=performance.now()-simStart;
+   let loops=0;const dayBefore=world.day,simStart=performance.now();while(acc>=1&&loops++<70&&!world.extinct){tick();acc--;}perf.simMs+=performance.now()-simStart;
    if(loops>0){
-    perf.simDays+=Math.max(0,loops-1);
+    perf.simDays+=world.day-dayBefore;
     // Throttle visual refresh independently of the simulation; never discard simulated days.
     if(!frame.lastVisual||stamp-frame.lastVisual>=currentPower().visual){render();frame.lastVisual=stamp;}
    }
