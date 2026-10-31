@@ -213,7 +213,7 @@ function stepToward(p,target,r,searchLimit){
  if(world?.navigationV1313){const a=world.navigationV1313;a.routeSearches++;if(found<0)a.unresolvedRoutes++;if(head>2200)a.extendedRoutes++;}
  if(being&&world.beingInvestigationV1314){const a=world.beingInvestigationV1314;if(found>=0)a.routesSucceeded++;else a.routesUnreachable++;if((found<0&&nearest===source))a.routeStalled++;}
  if(being&&world.navigationV1312){const a=world.navigationV1312;a.beingSearches++;if(head>2200){a.beingExtended++;a.extendedNodes+=head-2200;if(found>=0)a.beingExtendedResolved++;else a.beingExtendedUnresolved++;}if(found<0&&head===tail)a.beingNoRoute++;}
- const next=found>=0?found:nearest;
+ const next=searchLimit!=null&&found<0?source:(found>=0?found:nearest);
  if(being&&next===source&&world.navigationV1312)world.navigationV1312.beingStalled++;
  if(next!==source){const point=first[next];moveTo(p,{x:point%W,y:(point/W)|0});}
  work.calls++;work.nodes+=head;work.elapsed+=performance.now()-started;
