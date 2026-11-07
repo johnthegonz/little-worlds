@@ -400,7 +400,13 @@ function releaseInventory(p){const t=tile(p.x,p.y);if(!t)return;
  for(const type of ['wood','stone']){const amount=p.inventory[type]||0;t[type]+=amount;world.resources[type+'Returned']+=amount;p.inventory[type]=0;}}
 function materialMemory(p){return p.materialMemory||(p.materialMemory={stone:{n:0,food:0,harm:0},wood:{n:0,food:0,harm:0}});}
 function investigateMaterials(p,t,r){
- if(!t||p.energy<30||p.water<48||p.inventory.wood+p.inventory.stone>=4)return false;
+ if(!t||p.energy<30||p.water<48)return false;
+ // Hands and carrying capacity are finite, but experience need not stop after four objects.
+ // Putting an object back preserves local matter instead of creating new resources.
+ if(p.inventory.wood+p.inventory.stone>=4){
+  const held=p.inventory.stone>0?'stone':'wood';
+  p.inventory[held]--;t[held]++;world.resources[held+'Returned']++;
+ }
  const mem=materialMemory(p),types=['stone','wood'].filter(k=>t[k]>0);if(!types.length)return false;
  const preference=k=>.6+(p.food<80?2:.3)*(mem[k].food+1)/(mem[k].n+3)-1.4*mem[k].harm/(mem[k].n+3);
  const type=types.length===1?types[0]:preference(types[0])>=preference(types[1])?types[0]:types[1];
