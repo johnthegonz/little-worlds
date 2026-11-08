@@ -1893,7 +1893,7 @@ $('labRuns').addEventListener('change',()=>{if(labRunning)return;try{labRuns=lab
 $('labStart').onclick=()=>{
  if(labRunning)return;
  try{labRuns=labConfigRead();}catch(e){alert(e.message);return;}
- labResults=[];labFullReports=[];labIndex=0;labCancelled=false;labBatchId++;labBatchPairPlan=labPairPlan&&labPairPlan.count*2===labRuns.length&&labRuns.every((r,i)=>r.seed===labPairPlan.seeds[Math.floor(i/2)]&&r.policy===(i%2?'adaptive':'contextual'))?JSON.parse(JSON.stringify(labPairPlan)):null;labSave();labSetActive(true);
+ labResults=[];labFullReports=[];labIndex=0;labCancelled=false;labBatchId++;labBatchPairPlan=labPairPlan&&labPairPlan.count*2===labRuns.length&&labRuns.every((r,i)=>r.seed===labPairPlan.seeds[Math.floor(i/2)]&&r.policy===(i%2?'adaptive':'contextual')&&r.years===labRuns[0].years&&r.beings===labRuns[0].beings&&r.navigation===labRuns[0].navigation&&r.foraging===labRuns[0].foraging)?JSON.parse(JSON.stringify(labPairPlan)):null;labSave();labSetActive(true);
  $('laboratory').hidden=false;labRefreshReport();labNext();
 };
 $('labCancel').onclick=()=>{if(!labRunning)return;labCancelled=true;labEnd();};
