@@ -589,7 +589,7 @@ function contactOutcome(p,t,obj,history,r,previousCut){
  if(revealed){
   rc.actualExposure++;
   if(p.food<95){
-   t.grubs--;p.food=clamp(p.food+6.5,0,100);rc.actualFoodEaten++;rc.actualNutrients+=6.5;
+   t.grubs--;const beforeFood=p.food;p.food=clamp(p.food+6.5,0,100);rc.actualFoodEaten++;rc.actualNutrients+=p.food-beforeFood;
    observed[force].food=(observed[force].food||0)+1;
    general[force].food=(general[force].food||0)+1;
    if(force==='firm'&&!lightExposes)rc.learnedOnlyFoodEaten++;
