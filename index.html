@@ -1189,7 +1189,24 @@ function reproduce(){
  world.people.push(...born);
  if(born.length)history(born.length+' child'+(born.length>1?'ren were':' was')+' born.');
 }
+function prepareEcologyCache(){
+ // Permanent channels are established at generation and do not change.
+ // Cache adjacency and habitat count once; no ecological RNG consumed.
+ if(world.ecologyCacheReady)return;
+ const tiles=world.tiles;
+ let habitat=0;
+ for(let i=0;i<tiles.length;i++)if(tiles[i].permanent)habitat++;
+ for(let i=0;i<tiles.length;i++){
+  const x=i%W,y=(i/W)|0,t=tiles[i];
+  t.nearPermanentChannel=!!((x>0&&tiles[i-1].permanent)||
+   (x<W-1&&tiles[i+1].permanent)||(y>0&&tiles[i-W].permanent)||
+   (y<H-1&&tiles[i+W].permanent));
+ }
+ world.permanentHabitatTiles=habitat;
+ world.ecologyCacheReady=true;
+}
 function ecosystem(){
+ prepareEcologyCache();
  const r=rng((world.seed^0x74B2D983^Math.imul(world.day,0x9E3779B1))>>>0),w=world.weather;
  const season=Math.sin(2*Math.PI*world.day/365),wetSeason=clamp(.48+.34*season,0,1);
  const rainChance=clamp(.08+world.rainfall*.42+.24*season,.04,.92);
@@ -1204,8 +1221,7 @@ function ecosystem(){
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const t=world.tiles[y*W+x];if(t.rock)continue;
   if(t.permanent){t.water=true;t.wet=1;continue;}
-  let nearChannel=false;
-  for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<W&&ny<H&&world.tiles[ny*W+nx].permanent){nearChannel=true;break}}
+  const nearChannel=t.nearPermanentChannel;
   const flood=nearChannel&&w.lakeLevel>.72&&w.wetDays>3&&t.elev<.72;
   t.wet=clamp(t.wet+(flood?.45:-.19),0,1);t.water=t.wet>.6;
   if(t.water){floods++;t.plant=clamp(t.plant-.04,0,1);continue;}
@@ -1214,7 +1230,7 @@ function ecosystem(){
  }
  w.floodTiles=floods; if(world.day%45===0)for(const t of world.tiles){if(t.permanent||t.rock||t.water)continue;const cap=Math.floor(t.soil*(.5+t.plant)*t.moist*6);if(t.grubs===undefined)t.grubs=0;if(t.grubs<cap&&r()<.15+t.plant*.4)t.grubs++;t.earthDisturbance=Math.max(0,(t.earthDisturbance||0)-.025);}
  // Aquatic food population renews only while water and suitable conditions remain.
- const habitat=world.tiles.filter(t=>t.permanent).length;
+ const habitat=world.permanentHabitatTiles;
  w.fish=clamp(w.fish+(.004*w.fish*(1-w.fish/Math.max(1,habitat*.65)))-(.15+Math.max(0,world.temperature-.65)*.25),0,habitat*.65);
  if(world.day%180===0)history('Weather: '+w.phase+', soil moisture '+Math.round(w.soilWater*100)+'%, flooded ground '+floods+' tiles.');
  if(w.dryDays===20)history('Prolonged dry conditions have reduced soil moisture.');
@@ -1755,25 +1771,38 @@ function labWorkerStart(){
   generate(seed,beings);world.targetDay=years*365;world.targetSpan=years;world.targetUnit='years';
   world.materialPolicy=q.get('policy')||'adaptive';world.navigationMode=q.get('navigation')||'individual';world.experimentMode=q.get('foraging')||'adaptive';world.experimentStartCount=beings;
   const batch=Number(q.get('batch')),index=Number(q.get('run'));
-  let lastNotice=-1;
+  let lastNotice=-1,processed=0,computeMs=0;
+  // MessageChannel avoids the repeated timer clamping of nested setTimeout(0)
+  // while still yielding regularly for input, cancellation and rendering.
+  const channel=new MessageChannel();
+  function nextSlice(){channel.port2.postMessage(0);}
   function advance(){
    try{
     const beginning=performance.now();
-    let loops=0;while(!world.extinct&&loops<70&&performance.now()-beginning<22){tick();loops++;}
+    let loops=0;while(!world.extinct&&loops<200&&performance.now()-beginning<16){tick();loops++;}
+    processed+=loops;computeMs+=performance.now()-beginning;
     if(!world.extinct){
-     if(world.day-lastNotice>=100||lastNotice<0){lastNotice=world.day;parent.postMessage({kind:'genesis-lab',event:'progress',batch,index,day:world.day,target:world.targetDay},location.origin);}
-     setTimeout(advance,0);
-    }
-   }catch(e){parent.postMessage({kind:'genesis-lab',event:'error',batch,index,message:String(e.stack||e)},location.origin);}
+     if(world.day-lastNotice>=75||lastNotice<0){
+      lastNotice=world.day;
+      parent.postMessage({kind:'genesis-lab',event:'progress',batch,index,day:world.day,target:world.targetDay,
+       daysPerSecond:computeMs>0?+(1000*processed/computeMs).toFixed(1):0},location.origin);
+     }
+     nextSlice();
+    }else{channel.port1.close();channel.port2.close();}
+   }catch(e){
+    channel.port1.close();channel.port2.close();
+    parent.postMessage({kind:'genesis-lab',event:'error',batch,index,message:String(e.stack||e)},location.origin);
+   }
   }
+  channel.port1.onmessage=advance;
   parent.postMessage({kind:'genesis-lab',event:'ready',batch,index},location.origin);
-  setTimeout(advance,0);
+  nextSlice();
  }catch(e){parent.postMessage({kind:'genesis-lab',event:'error',batch:Number(q.get('batch')),index:Number(q.get('run')),message:String(e.stack||e)},location.origin);}
 }
 window.addEventListener('message',e=>{
  if(labChild||!labRunning||e.origin!==location.origin||e.source!==labIframe?.contentWindow)return;
  const m=e.data;if(!m||m.kind!=='genesis-lab'||m.batch!==labBatchId||m.index!==labIndex)return;
- if(m.event==='progress'){labSetProgress('Running '+(labIndex+1)+' / '+labRuns.length+' · Day '+m.day+' / '+m.target,m.day,m.target);return;}
+ if(m.event==='progress'){labSetProgress('Running '+(labIndex+1)+' / '+labRuns.length+' · Day '+m.day+' / '+m.target+' · '+(m.daysPerSecond||'?')+' simulation days/s of CPU time',m.day,m.target);return;}
  if(m.event==='ready')return;
  const param=labRuns[labIndex];
  if(m.event==='complete'){
